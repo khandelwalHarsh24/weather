@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    input {
+      padding: 8px;
+      margin-right: 10px;
+    }
+
+    button {
+      padding: 8px;
+    }
+
+    #result {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Weather App</h1>
+
+  <label for="cityInput">Enter city names (comma-separated):</label>
+  <input type="text" id="cityInput" placeholder="e.g., London,New York,Tokyo">
+  <button onclick="getWeather()">Get Weather</button>
+
+  <div id="result"></div>
+
+  <script>
+    async function getWeather() {
+      const cityInput = document.getElementById('cityInput').value;
+      if (cityInput.trim() === '') {
+        alert('Please enter at least one city name.');
+        return;
+     }
+      const cities = cityInput.split(',');
+
+      try {
+        const response = await fetch('http://localhost:3000/weather', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ cities }),
+        });
+
+        const data = await response.json();
+
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = '';
+
+        data.forEach(cityData => {
+          const cityResult = document.createElement('div');
+          if (cityData.error) {
+            cityResult.innerHTML = `<strong>${cityData.city}:</strong> ${cityData.error}`;
+          } else {
+            cityResult.innerHTML = `<strong>${cityData.city}:</strong> ${cityData.temperature}°C, ${cityData.description}`;
+          }
+          resultDiv.appendChild(cityResult);
+        });
+      } catch (error) {
+        console.error('Error fetching weather data:', error.error);
+      }
+    }
+  </script>
+
+</body>
+</html>

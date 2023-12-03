@@ -11,6 +11,11 @@ app.use('*',cors());
 
 app.use(express.json());
 
+
+app.get('/',(req,res)=>{
+  res.status(200).json("Hello World")
+})
+
 app.post('/weather', async (req, res) => {
   try {
     const { cities } = req.body;
